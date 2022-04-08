@@ -1,10 +1,10 @@
 package com.andersenlab;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
@@ -14,7 +14,7 @@ public class SignInPageTest {
     private WebDriver driver;
     private SignInPage signInPage;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
@@ -27,11 +27,11 @@ public class SignInPageTest {
     @Test
     public void authorization() {
         HomePage homePage = signInPage.loginWithCorrectCreds("ife87855@mzico.com", "123456q7");
-        Assert.assertEquals("BBC - Homepage", homePage.getTitle());
-        Assert.assertEquals("Your account", homePage.getAccountButtonText());
+        Assertions.assertEquals("BBC - Homepage", homePage.getTitle());
+        Assertions.assertEquals("Your account", homePage.getAccountButtonText());
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         driver.close();
     }

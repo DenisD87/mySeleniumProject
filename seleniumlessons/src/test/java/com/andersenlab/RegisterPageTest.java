@@ -1,10 +1,12 @@
 package com.andersenlab;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
@@ -14,7 +16,7 @@ public class RegisterPageTest {
     private WebDriver driver;
     private RegisterPage registerPage;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
@@ -26,49 +28,21 @@ public class RegisterPageTest {
         registerPage.dateOfBirthInput("09", "11", "1987");
     }
 
-    @Test
-    public void enteringEmptyPasswordDuringRegistration() {
-        registerPage.clickRegisterButton("");
-        Assert.assertEquals("Чего-то не хватает. Пожалуйста, проверьте и попробуйте ещё раз.", registerPage.getPasswordMessage());
+    @DisplayName("Ввод пароля при регистрации")
+    @ParameterizedTest
+    @CsvSource({"'Чего-то не хватает. Пожалуйста, проверьте и попробуйте ещё раз.',''",
+            "'Извините, этот пароль слишком короткий. В нём должно быть не менее 8 символов.', '1'",
+            "'Извините, этот пароль слишком короткий. В нём должно быть не менее 8 символов.','123q456'",
+            "'Извините, этот пароль недействителен. Пожалуйста, включите одну букву.','12345678'",
+            "'Извините, этот пароль недействителен. Пожалуйста, включите одну букву.','!@#$%ячс'",
+            "'Извините, этот пароль недействителен. Пожалуйста, включите одну букву.','!@#1%2чс'",
+            "'Извините, этот пароль недействителен. Пожалуйста, включите что-нибудь, кроме букв.','qwertyui'"})
+    public void enteringPasswordDuringRegistration(String expected, String actural) {
+        registerPage.clickRegisterButton(actural);
+        Assertions.assertEquals(expected, registerPage.getPasswordMessage());
     }
 
-    @Test
-    public void enteringShortOnePasswordDuringRegistration() {
-        registerPage.clickRegisterButton("1");
-        Assert.assertEquals("Извините, этот пароль слишком короткий. В нём должно быть не менее 8 символов.", registerPage.getPasswordMessage());
-    }
-
-    @Test
-    public void enteringShortSevenPasswordDuringRegistration() {
-        registerPage.clickRegisterButton("123q456");
-        Assert.assertEquals("Извините, этот пароль слишком короткий. В нём должно быть не менее 8 символов.", registerPage.getPasswordMessage());
-    }
-
-    @Test
-    public void enteringRandomNumbersPasswordDuringRegistration() {
-        registerPage.clickRegisterButton("12345678");
-        Assert.assertEquals("Извините, этот пароль недействителен. Пожалуйста, включите одну букву.", registerPage.getPasswordMessage());
-    }
-
-    @Test
-    public void enteringRandomSymbolsPasswordDuringRegistration() {
-        registerPage.clickRegisterButton("!@#$%ячс");
-        Assert.assertEquals("Извините, этот пароль недействителен. Пожалуйста, включите одну букву.", registerPage.getPasswordMessage());
-    }
-
-    @Test
-    public void enteringRandomSymbolsAndNumbersPasswordDuringRegistration() {
-        registerPage.clickRegisterButton("!@#1%2чс");
-        Assert.assertEquals("Извините, этот пароль недействителен. Пожалуйста, включите одну букву.", registerPage.getPasswordMessage());
-    }
-
-    @Test
-    public void enteringRandomLettersPasswordDuringRegistration() {
-        registerPage.clickRegisterButton("qwertyui");
-        Assert.assertEquals("Извините, этот пароль недействителен. Пожалуйста, включите что-нибудь, кроме букв.", registerPage.getPasswordMessage());
-    }
-
-    @After
+    @AfterEach
     public void tearDown() {
         driver.close();
     }
